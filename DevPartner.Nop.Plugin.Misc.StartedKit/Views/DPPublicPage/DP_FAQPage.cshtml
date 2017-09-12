@@ -1,0 +1,61 @@
+﻿@using System.Globalization
+@using Nop.Core.Infrastructure
+@using Nop.Web.Framework.UI
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+@model FAQModel
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    
+    // --------- liCover for Responsive adaptive image  -------
+    Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/liCover.css");
+    Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Scripts/jquery.liCover.js");
+
+    //var _dpPageHeadBuilder = EngineContext.Current.Resolve<IDPPageHeadBuilder>();
+    //_dpPageHeadBuilder.SetActiveNavbarItemSystemId(parentId, parent.EntityTypeId);
+}
+@{
+    var date = "";
+    if (Model.PublishDateTime != null)
+    {
+        DateTime? datetime = Model.PublishDateTime;
+        if (datetime.HasValue)
+        {
+            date = datetime.Value.ToString("dd MMMM, hh:mm", CultureInfo.InvariantCulture);
+        }
+    }
+}
+@section Breadcrumb
+{
+    @Html.Action("Breadcrumb", "DevPartnerCommon", new { entityId = Model.Id, includeFolderEntities = false })
+}
+<div class="page text-item-page">
+
+    <div class="page-body">
+		<div class="page-title">
+      	<h1>Coming Soon</h1>
+       </div>
+            @if (!String.IsNullOrEmpty(date))
+            {
+                <div class="item-date">@date</div>
+            }
+        <div class="item-shortdescription">
+            @Html.Raw(Model.Description)
+        </div>
+        <div class="item-body">
+            @Html.Raw(Model.Text)
+        </div>
+    </div>
+    
+    
+</div>
+
+<script type="text/javascript">
+		$(function(){
+	$(window).load(function(){
+		$('.cover').liCover({
+			parent: $('.adaptive-picture'),
+			position:'absolute'
+		})
+	})
+})
+</script>

@@ -1,0 +1,71 @@
+﻿@using Nop.Core.Infrastructure
+@using Nop.Web.Framework.UI
+@using DevPartner.Nop.Plugin.Core.Services.Entities
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+
+@model DevPartner.Nop.Plugin.Core.Models.CMS.DPPublicPageModel
+
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+    //title
+    Html.AddTitleParts(T("PageTitle.Account").Text);
+
+    //page class
+    Html.AppendPageCssClassParts("html-account-page");
+    Html.AppendPageCssClassParts("html-download-list-page");
+
+    Html.AddCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/listOfFilesStyle.css");
+
+    var _entityService = EngineContext.Current.Resolve<IEntityService>();
+    var _entityModelService = EngineContext.Current.Resolve<EntityModelService>();
+
+    var entities = _entityService.SearchEntities(parentId: Model.Id);
+    var entitiesModels = _entityModelService.GetModels<DownloadModel>(entities);
+}
+@section left
+{
+    @try
+    {
+        @Html.Action("CustomerNavigation", "Customer")
+    }
+    catch
+    {
+        @Html.Partial("~/Views/Customer/MyAccountNavigation.cshtml", Model, new ViewDataDictionary())
+    }
+}
+<div class="page account-page customer-info-page">
+    <div class="page-title">
+        <h1>@T("Account.MyAccount") - @Model.Name</h1>
+    </div>
+    <div class="page-body">
+        @foreach (var entity in entitiesModels)
+        {
+
+            <div class="item">
+                <div class="item-row">
+                    <div class="item-row-label">
+                        @T("DevPartner.Core.Title"):
+                    </div>
+                    <div class="item-row-value">
+                        @entity.Name
+                    </div>
+                </div>
+                <div class="item-row">
+                    <div class="item-row-label">@T("DevPartner.Core.FileLink"):</div>
+                    @{
+                        var download = entity.Download;
+                        <div class="item-row-value">[<a href="@Url.RouteUrl("DevPartner.Nop.Plugin.Core.PublicPage.DownloadFile", new { entityId = @entity.Id, downloadId = @entity.Download.Id })">@string.Format("{0}{1}", download.Filename, download.Extension)</a>]</div>
+                    }
+                </div>
+                <div class="item-row">
+                    <div class="item-row-label">@T("DevPartner.Core.UpdatedOnUtc"):</div>
+                    <div class="item-row-value">@entity.UpdatedOnUtc</div>
+                </div>
+                <div class="item-row">
+                    <div class="item-row-label">@T("DevPartner.Core.Description"):</div>
+                    <div class="item-row-value">@Html.Raw(entity.Description)</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,174 @@
+/* Add here all your css styles (customizations) */
+
+.nounderline:hover {
+    text-decoration: none!important;
+}       
+ .testimonial-container .checked-list i {
+    color: #72c02c;
+    margin-right: 5px;
+    margin-top: 2px;
+    float: left;
+}
+
+ .da-slide p {
+     max-width: 45%;
+ }
+
+         .icons-box i.circle {
+            float: none !important;
+            margin: 0 auto !important;
+        }
+
+        .icons-box i.circle-color {
+            float: none !important;
+            margin: 0 auto !important;
+        }
+
+        .icons-box i.circle-color-full {
+            float: none !important;
+            margin: 0 auto !important;
+        }
+
+.circle {
+    -webkit-border-radius: 50em;
+    -moz-border-radius: 50em;
+    border-radius: 50em;
+    -webkit-box-shadow: 0px 0px 0px 3px rgba(0,0,0,1);
+    -moz-box-shadow: 0px 0px 0px 3px rgba(0,0,0,1);
+    box-shadow: 0px 0px 0px 3px rgba(0,0,0,1);
+    margin: 0 auto;
+    opacity: .1;
+    filter: alpha(opacity=10);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=10)";
+}
+
+.big {
+    border: 20px solid #fff !important;
+}
+
+.ico-color {
+    background-image: url("../img/icons/glyphicons.png");
+    opacity: 1;
+}
+
+.mini-color {
+    background-image: url("../img/icons/glyphicons-mini.png");
+    opacity: 1;
+}
+
+.circle-color {
+    background-color: #fff;
+    -webkit-border-radius: 50em;
+    -moz-border-radius: 50em;
+    border-radius: 50em;
+    -webkit-box-shadow: 0px 0px 0px 3px #29a9df;
+    -moz-box-shadow: 0px 0px 0px 3px #29a9df;
+    box-shadow: 0px 0px 0px 3px #29a9df;
+    margin: 0 auto;
+    opacity: 1;
+}
+
+.circle-color-full {
+    background-color: #29a9df;
+    -webkit-border-radius: 50em;
+    -moz-border-radius: 50em;
+    border-radius: 50em;
+    -webkit-box-shadow: 0px 0px 0px 3px #29a9df;
+    -moz-box-shadow: 0px 0px 0px 3px #29a9df;
+    box-shadow: 0px 0px 0px 3px #29a9df;
+    margin: 0 auto;
+    opacity: 1;
+}
+
+.big-color {
+    border: 20px solid #29a9df !important;
+}
+.pull-center {
+    text-align: center;
+}
+
+
+.highlights .item:hover i {
+    -webkit-animation: moveFromZoom 300ms ease;
+    -moz-animation: moveFromZoom 300ms ease;
+    /*-ms-animation: moveFromZoom 300ms ease;*/
+    -o-animation: moveFromZoom 300ms ease;
+    animation: moveFromZoom 300ms ease;
+    color: #1faeff;
+    border-color: #1faeff;
+}
+
+.icons-box i.circle-color {
+    float: none !important;
+    margin: 0 auto !important;
+}
+
+
+/* services style  =====================================================*/
+
+@-webkit-keyframes moveFromZoom {
+    from {
+        opacity: 0;
+        -webkit-transform: scale(2);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: translateX(0%);
+    }
+}
+
+@-moz-keyframes moveFromZoom {
+    from {
+        opacity: 0;
+        -moz-transform: scale(2);
+    }
+
+    to {
+        opacity: 1;
+        -moz-transform: translateX(0%);
+    }
+}
+
+@-o-keyframes moveFromZoom {
+    from {
+        opacity: 0;
+        -o-transform: scale(2);
+    }
+
+    to {
+        opacity: 1;
+        -o-transform: translateX(0%);
+    }
+}
+
+@keyframes moveFromZoom {
+    from {
+        opacity: 0;
+        transform: scale(2);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0%);
+    }
+}
+
+.cbp-caption-defaultWrap img {
+   height: 210px!important;
+}
+
+
+ .gray-ico {
+         background-image: url("../img/glyphicons.png")!important;
+     width: 45px!important;
+     height: 45px!important;
+     line-height: 48px;
+ }
+ .ico-comments {
+    background-position: -432px -1440px;
+}
+ .ico-group {
+    background-position: -144px -192px;
+}
+

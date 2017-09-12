@@ -1,0 +1,42 @@
+﻿@using System.Globalization
+@model DevPartner.Nop.Plugin.Core.Models.Basic.DPPublicContentPageModel
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    
+ 
+}
+@{
+    var date = "";
+    if (Model.PublishDateTime != null)
+    {
+        DateTime? datetime = Model.PublishDateTime;
+        if (datetime.HasValue)
+        {
+            date = datetime.Value.ToString("dd MMMM, hh:mm", CultureInfo.InvariantCulture);
+        }
+    }
+}
+
+@section Breadcrumb
+{
+    @Html.Action("Breadcrumb", "DevPartnerCommon", new { entityId = Model.Id, includeFolderEntities = false })
+}
+
+<div class="page text-item-page">
+
+    <div class="page-body">
+        <div class="page-title">
+            <h1>@Html.Raw(Model.Name)</h1>
+        </div>
+        @if (!String.IsNullOrEmpty(date))
+        {
+            <div class="item-date">@date</div>
+        }
+        <div class="item-shortdescription">
+            @Html.Raw(Model.Description)
+        </div>
+        <div class="item-body">
+            @Html.Raw(Model.Text)
+        </div>
+    </div>
+</div>

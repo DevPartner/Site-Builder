@@ -1,0 +1,75 @@
+﻿@model DevPartner.Nop.Plugin.Misc.StartedKit.Models.GalleryModel
+@using DevPartner.Nop.Plugin.Core.Helpers
+@using DevPartner.Nop.Plugin.Core.Models
+@using DevPartner.Nop.Plugin.Core.Services.AttRefServices
+@using Nop.Core.Infrastructure
+@using Nop.Services.Media
+@using Nop.Web.Framework.UI
+@{
+    int pictureSize = 300;
+    var pictureService = EngineContext.Current.Resolve<IPictureService>();
+    var attRefBookService = EngineContext.Current.Resolve<IAttRefBookService>();
+    var attRefTypeService = EngineContext.Current.Resolve<IAttRefTypeService>();
+    <!-- Add mousewheel plugin (this is optional) -->
+    Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Scripts/strip.pkgd.min.js");
+    //Html.AddScriptParts("~/Plugins/Widgets.Gallery/Scripts/slimbox2.js");
+    Html.AddCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/Gallery.css");
+    Html.AddCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/strip.css");
+    var imageVideoTypeRefType = attRefTypeService.GetAttRefTypeByName("ImageVideoType");
+    var imageVideoTypeRefBooks = attRefBookService.GetAttRefBooksByRefType(imageVideoTypeRefType.Id);
+    var videoRefBook = imageVideoTypeRefBooks.Where(x => x.Value == "Video").FirstOrDefault();
+}
+<div class="gallery-grid">
+    <div class="item-grid">
+        @foreach (var item in Model.Models)
+        {
+            string fullSizepictureUrl = "";
+            string pictureUrl = "";
+            if (item.ThumbnailImage != null)
+            {
+                fullSizepictureUrl = pictureService.GetPictureUrl(item.ThumbnailImage);
+                pictureUrl = pictureService.GetPictureUrl(item.ThumbnailImage, pictureSize);
+            }
+            else
+            {
+                fullSizepictureUrl = pictureService.GetDefaultPictureUrl();
+                pictureUrl = pictureService.GetDefaultPictureUrl(300);
+            }
+            var link = item.ImageVideoType == videoRefBook.Id && !String.IsNullOrEmpty(item.ExternalUrl) ? item.ExternalUrl : fullSizepictureUrl;
+            <div class="item-box">
+                <div class="picture">
+                    <div class="adaptive-picture">
+                        
+                        <a data-gallery="lightbox-p" href="@link"
+                           title="@(item.ThumbnailImage != null ? item.ThumbnailImage.TitleAttribute : "")"
+                           class="fresco strip" data-strip-caption="@item.Description"
+                           data-strip-group="page"
+                           data-fresco-group=" page"
+                           rel="shadowbox[Mixed];player=swf">
+                            <img class="cover" src="@pictureUrl" title="@(item.ThumbnailImage != null ? item.ThumbnailImage.TitleAttribute : "")" alt="@(item.ThumbnailImage != null ? item.ThumbnailImage.AltAttribute : "")" />
+                        </a>
+                    </div>
+                </div>
+                <div class="title">
+                    <h3>@item.Name</h3>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@if (Model.Models.Count <= 0)
+{
+    <div class="no-result">
+        @T("DevPartner.Core.List.NoResultsText")
+    </div>
+}
+else
+{
+    @(Html.Partial("_DevPartnerPagination", new PaginationInfo
+      {
+          PageUrl = Url.SetParameter("page", "!0"),
+          CurrentPage = Model.PageIndex,
+          PageSize = Model.PageSize == 0 ? int.MaxValue : Model.PageSize,
+          TotalItemCount = Model.TotalCount,
+      }))   
+}

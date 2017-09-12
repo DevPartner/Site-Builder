@@ -1,0 +1,51 @@
+﻿@using System.Globalization
+@using System.Web.Mvc.Html
+@using DevPartner.Nop.Plugin.Core.Helpers
+@using DevPartner.Nop.Plugin.Core.Models
+@using DevPartner.Nop.Plugin.Core.Models.Basic
+@using Nop.Web.Framework.UI
+
+@model DevPartner.Nop.Plugin.Core.Models.ViewModels.ListPageViewModel
+@{
+        //page class
+        Html.AppendPageCssClassParts("html-faq-list-page");
+
+    var models = Model.Entities.Cast<DPPublicContentPageModel>().ToList();
+}
+<div class="items-list help-list-page">
+    @foreach (var entity in models)
+    {
+        <div class="item">
+            <div class="item-head">
+                <div class="item-date"><span class="date-label">@T("DevPartner.Core.UpdatedOnUtc"):</span><span class="date-value">@(entity.PublishDateTime != null ? entity.PublishDateTime.Value.ToString("dd MMMM, hh:mm", CultureInfo.InvariantCulture) : "")</span></div>
+                <a class="title" href="@Url.RouteUrl("Entity", new {SeName = entity.UrlRecord})">
+                    <h2>@entity.Name</h2>
+                </a>
+            </div>
+
+            <div class="item-body">
+                <div class="item-body-label">@T("DevPartner.Core.Description"):</div>
+                <div class="item-body-value">
+                    @Html.Raw(entity.Description)
+                    <a class="read-more" href="@Url.RouteUrl("Entity", new {SeName = entity.UrlRecord})">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    }
+    @if (models.Count <= 0)
+    {
+        <div class="no-result">
+            @T("DevPartner.Core.List.NoResultsText")
+        </div>
+    }
+</div>
+@if (Model.TotalCount > 0)
+{
+    @(Html.Partial("_DevPartnerPagination", new PaginationInfo
+    {
+        PageUrl = Url.SetParameter("page", "!0"),
+        CurrentPage = Model.PageIndex,
+        PageSize = Model.PageSize,
+        TotalItemCount = Model.TotalCount,
+    }))
+}

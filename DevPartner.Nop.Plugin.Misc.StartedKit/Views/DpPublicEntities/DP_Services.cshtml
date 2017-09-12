@@ -1,0 +1,169 @@
+﻿@using DevPartner.Nop.Plugin.Core.Helpers
+@using DevPartner.Nop.Plugin.Core.Services.Entities
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Singletons
+@using Nop.Web.Framework.UI
+@using Nop.Core.Infrastructure
+@using Nop.Services.Media
+@model DevPartner.Nop.Plugin.Misc.StartedKit.Models.ServicesModel
+@{
+    Layout = "~/Views/Shared/_ColumnsOne_Empty.cshtml";
+    //prepare services
+    var entityService = EngineContext.Current.Resolve<IEntityService>();
+    var entityTypeService = EngineContext.Current.Resolve<IEntityTypeService>();
+    var entityModelService = EngineContext.Current.Resolve<IEntityModelService>();
+    var pictureService = EngineContext.Current.Resolve<IPictureService>();
+
+    //Find all childe entity
+    var entities = entityService.SearchEntities(parentId: Model.Id);
+    //Find childe entity : Service
+    var serviceEntityType = entityTypeService.GetEntityTypeById(EntityTypes.Service.Id);
+    var serviceTypeExt = serviceEntityType.GetEntityTypeExt();
+    var serviceType = Type.GetType(serviceTypeExt.AssemblyType);
+    var services = entityModelService.GetModels(entities.Where(x => x.EntityTypeId == serviceEntityType.Id).ToList(), serviceType).Cast<ServiceModel>().ToList();
+
+
+    //Find childe entity : Services
+    var servicesEntityType = entityTypeService.GetEntityTypeById(EntityTypes.Services.Id);
+    var servicesTypeExt = servicesEntityType.GetEntityTypeExt();
+    var servicesType = Type.GetType(servicesTypeExt.AssemblyType);
+    var servicesGroups = entityModelService.GetModels(entities.Where(x => x.EntityTypeId == servicesEntityType.Id).ToList(), servicesType).Cast<ServicesModel>().ToList();
+}
+@{
+    Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/custom.css");
+    Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/bootstrap-responsive.css");
+    Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/services.css");
+}
+<!-- start: Page Title -->
+<!--=== Breadcrumbs ===-->
+<div class="breadcrumbs-v3 img-v3 text-center">
+    <div class="container">
+        <h1>@T("DevPartner.Services")</h1>
+        @*<p>Discover more about us</p>*@
+    </div><!--/end container-->
+</div>
+<!--/breadcrumbs-->
+<!--=== End Breadcrumbs ===-->
+<!-- end: Page Title -->
+<!--start: Wrapper-->
+<div class="wrapper">
+    <!--start: Container -->
+    <div class="container">
+        @if (!String.IsNullOrEmpty(Model.HeroContent))
+        {
+            <div>
+                <div class="hero-unit">
+                    <i class="@Model.HeroIcon gray-ico ico-big pull-left"></i>
+                    <h4>
+                        @Model.HeroContent
+                    </h4>
+                </div>
+            </div>
+        }
+        <div class="row-fluid highlights">
+            @foreach (var item in services)
+            {
+                <div class="span4 icons-box well">
+                    <div class="item ">
+                        <div class="pull-center">
+                            <a href="@Url.RouteUrl("Entity", new {SeName = item.UrlRecord})"><i class="@item.HeroIcon ico-color circle-color big"></i></a>
+                        </div>
+                        <div class="title">
+                            <h3 style="line-height: 50px;">
+                                @Html.Raw(item.Name)
+                            </h3>
+                        </div>
+                    </div>
+                    <p>@Html.Raw(item.Description)</p>
+                    <!--<div><a href="#" class="info btn ">Read More</a></div>-->
+                </div>
+            }
+        </div>
+        @foreach (var item in servicesGroups)
+        {
+            <div class="space-top">
+            </div>
+            <div class="title">
+                <h2 style="font-size: 2em; line-height: 50px;">
+                    @item.Name
+                </h2>
+            </div>
+            <div class="space-top">
+            </div>
+
+            entities = entityService.SearchEntities(parentId: item.Id);
+            services = entityModelService.GetModels(entities.Where(x => x.EntityTypeId == serviceEntityType.Id).ToList(), serviceType).Cast<ServiceModel>().ToList();
+            var childServicesGroups = entityModelService.GetModels(entities.Where(x => x.EntityTypeId == servicesEntityType.Id).ToList(), servicesType).Cast<ServicesModel>().ToList();
+
+
+            <section class="row filtrable portfolio thumbnails">
+                @{var i = 0;}
+                @foreach (var service in childServicesGroups)
+                {
+                    i++;
+                    if (service.ThumbnailImage != null)
+                    {
+                        <article data-id="id-@i" data-type="javascript html" class="span4 ">
+                            <div class="well">
+                                <div class="thumbnail hover-pf10">
+                                    <a href="@Url.RouteUrl("Entity", new {SeName = service.UrlRecord})">
+                                        <img src="@pictureService.GetPictureUrl(service.ThumbnailImage)" alt="@service.Name" />
+                                        <div class="mask-1"></div>
+                                        <div class="mask-2"></div>
+                                        <div class="caption">
+                                            <h2>@T("GetYourSolution")</h2>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="item-description">
+                                    <h2><a href="@Url.RouteUrl("Entity", new {SeName = service.UrlRecord})">@service.NavigationTitle</a></h2>
+                                    <p>@service.Description</p><br />
+                                    <div>
+                                        @{
+                                            entities = entityService.SearchEntities(parentId: service.Id, entityTypeId: serviceEntityType.Id);
+                                            var childServices = entityModelService.GetModels(entities, serviceType).Cast<ServiceModel>().ToList();
+                                        }
+                                        @foreach (var childServicePage in childServices)
+                                        {
+                                            <a href="@Url.RouteUrl("Entity", new {SeName = childServicePage.UrlRecord})" class="info btn ">@childServicePage.NavigationTitle</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                }
+                @foreach (var service in services)
+                {
+                    i++;
+                    if (service.ThumbnailImage != null)
+                    {
+                        <article data-id="id-@i" data-type="javascript html" class="span4 ">
+                            <div class="well">
+                                <div class="thumbnail hover-pf10">
+                                    <a href="@Url.RouteUrl("Entity", new {SeName = service.UrlRecord})">
+                                        <img src="@pictureService.GetPictureUrl(service.ThumbnailImage)" alt="@service.Name" />
+                                        <div class="mask-1"></div>
+                                        <div class="mask-2"></div>
+                                        <div class="caption">
+                                            <h2>@T("GetYourSolution")</h2>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="item-description">
+                                    <h2><a href="@Url.RouteUrl("Entity", new {SeName = service.UrlRecord})">@service.NavigationTitle</a></h2>
+                                    <p>@service.Description</p><br />
+                                    <div><a href="@Url.RouteUrl("Entity", new {SeName = service.UrlRecord})" class="info btn ">@T("ReadMore")</a></div>
+                                </div>
+                            </div>
+                        </article>
+                    }
+
+                }
+            </section>
+            //Html.RenderPartial("umbServicesGroup", item);
+        }
+    </div>
+    <!--end: Container-->
+</div>
+<!-- end: Wrapper  -->

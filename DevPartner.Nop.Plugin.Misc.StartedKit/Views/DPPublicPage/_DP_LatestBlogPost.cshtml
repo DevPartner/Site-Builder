@@ -1,0 +1,62 @@
+﻿@using DevPartner.Nop.Plugin.Core.Helpers
+@using DevPartner.Nop.Plugin.Core.Services.Entities
+@using DevPartner.Nop.Plugin.Core.Services.Tables
+@using DevPartner.Nop.Plugin.Core.Singletons
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Singletons
+@using Nop.Core
+@using Nop.Core.Infrastructure
+@using Nop.Services.Blogs
+@using Nop.Services.Media
+@using Nop.Services.Seo
+@{
+    //temp
+    //get projects
+
+    //prepare services
+    var pictureService = EngineContext.Current.Resolve<IPictureService>();
+    var tableAttService = EngineContext.Current.Resolve<ITableAttService>();
+    var blogService = EngineContext.Current.Resolve<IBlogService>();
+    var workContext = EngineContext.Current.Resolve<IWorkContext>();
+    //Find all BlogPost(Sort by StartDateUtc or CreatedOnUtc inside metod)
+    var blogs = blogService.GetAllBlogPosts(pageSize: 3, languageId: workContext.WorkingLanguage.Id);
+    var additionsAttlist = tableAttService.TableXmlToDynamics(tableName: "BlogPost", ids: blogs.Select(x => x.Id).ToArray());
+    var pictureUrls = new Dictionary<int, string>();
+    foreach (var additionsAtt in additionsAttlist)
+    {
+        if (additionsAtt.Value.HasAttribute("BlogThumbnailImage"))
+        {
+            int PicId;
+            Int32.TryParse(additionsAtt.Value.BlogThumbnailImage, out PicId);
+            pictureUrls.Add(additionsAtt.Key, pictureService.GetPictureUrl(PicId));
+        }
+    }
+}
+@if (blogs.Any())
+{
+    <div class="posts margin-bottom-40">
+        <div class="headline headline-md">
+            <h2>@T("DevPartner.RecentPosts")</h2>
+        </div>
+        @foreach (var post in blogs)
+        {
+            <dl class="dl-horizontal">
+                @if (pictureUrls.Keys.Contains(post.Id))
+                    {
+                    <dt><a href="@Url.RouteUrl("BlogPost", new {SeName = post.GetSeName(post.LanguageId, ensureTwoPublishedLanguages: false)})"><img src="@pictureUrls[post.Id]" alt="@post.Title" /></a></dt>
+                }
+                <dd>
+                    <p>
+                        <a href="@Url.RouteUrl("BlogPost", new {SeName = post.GetSeName(post.LanguageId, ensureTwoPublishedLanguages: false)})">@post.Title</a>
+                        <br />
+                        <time datetime="@post.CreatedOnUtc">
+                            @post.CreatedOnUtc.ToString("MMM d, yyyy")
+                        </time>
+                    </p>
+                </dd>
+            </dl>
+
+        }
+    </div>
+    <!-- end: Row -->
+}

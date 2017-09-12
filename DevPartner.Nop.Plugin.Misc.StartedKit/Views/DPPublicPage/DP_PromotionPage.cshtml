@@ -1,0 +1,105 @@
+﻿@using System.Globalization
+@using Nop.Web.Framework.UI
+@model DevPartner.Nop.Plugin.Core.Models.Basic.DPPublicContentPageModel
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+    
+    // --------- liCover for Responsive adaptive image  -------
+    Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/liCover.css");
+    Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Scripts/jquery.liCover.js");
+
+    //var _dpPageHeadBuilder = EngineContext.Current.Resolve<IDPPageHeadBuilder>();
+    //_dpPageHeadBuilder.SetActiveNavbarItemSystemId(parentId, parent.EntityTypeId);
+}
+@{
+    var date = "";
+    if (Model.PublishDateTime != null)
+    {
+        DateTime? datetime = Model.PublishDateTime;
+        if (datetime.HasValue)
+        {
+            date = datetime.Value.ToString("dd MMMM, hh:mm", CultureInfo.InvariantCulture);
+        }
+    }
+}
+@section Breadcrumb
+{
+    @Html.Action("Breadcrumb", "DevPartnerCommon", new { entityId = Model.Id, includeFolderEntities = false })
+}
+<div class="page text-item-page">
+
+    <div class="page-body">
+		<div class="page-title">
+      	<h1>@Html.Raw(Model.Name)</h1>
+       </div>
+            @if (!String.IsNullOrEmpty(date))
+            {
+                <div class="item-date">@date</div>
+            }
+        <div class="item-shortdescription">
+            @Html.Raw(Model.Description)
+        </div>
+        <div class="item-body">
+            @Html.Raw(Model.Text)
+        </div>
+    </div>
+    
+    @*<div class="similar-materials">
+		<div class="block-title">Читайте также</div>
+		<div class="items-list">
+			<div class="item">
+			  <div class="item-picture">  
+					<div class="adaptive-picture">
+						<a href="#"><img class="cover" src="/Themes/ProsvetTheme/Content/images/custom-content/category01.jpg"></a>
+					</div>
+				</div>
+
+				<div class="item-head">
+					<div class="item-date"><span class="date-label">Updated on:</span><span class="date-value">13.06.2017 0:00:00</span></div>
+					<a class="title" href="#"><h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sit amet</h2></a>
+				</div>
+
+				<div class="item-body">
+					<div class="item-body-label">Description:</div>
+					<div class="item-body-value">
+						Ut dictum suscipit turpis sed dapibus. Vivamus sit amet semper lorem. Suspendisse volutpat urna risus, eu aliquet elit malesuada eu. Nunc in consectetur purus. Nam ante nisi, pulvinar vitae purus a, eleifend eleifend metus. Fusce ac nisl et massa mollis fermentum a sed nunc. Ut augue quam, sagittis lobortis enim vel, iaculis accumsan sem.
+						<a class="read-more" href="#">Подробнее</a>
+					</div>        	
+				</div>
+				</div>
+
+				<div class="item">
+					<div class="item-picture">  
+						<div class="adaptive-picture">
+							<a href="#"><img class="cover" src="/Themes/ProsvetTheme/Content/images/custom-content/category02.jpg"></a>
+						</div>
+					</div>
+
+					<div class="item-head">
+						<div class="item-date"><span class="date-label">Updated on:</span><span class="date-value">14.06.2017 0:00:00</span></div>
+						<a class="title" href="#"><h2>Nulla dolor tortor, aliquam sed neque vitae, sodales elementum</h2></a>
+					</div>
+
+					<div class="item-body">
+						<div class="item-body-label">Description:</div>
+							<div class="item-body-value">
+								Nunc magna neque, commodo sit amet risus sed, laoreet commodo metus. Proin lacus ipsum, pretium non tempus id, egestas at elit. Praesent laoreet porttitor nibh vitae volutpat. Donec sit amet nisl gravida purus dignissim consectetur eu non magna. Maecenas ullamcorper, purus sed mollis venenatis, sapien ex interdum diam, ac sodales mauris nibh in velit. Aliquam ac tempor leo. Phasellus non est malesuada, placerat nibh at, molestie ipsum.
+								<a class="read-more" href="#">Подробнее</a>
+							</div>        	
+					</div>
+				</div>
+
+			</div>*@
+    </div>
+</div>
+
+<script type="text/javascript">
+		$(function(){
+	$(window).load(function(){
+		$('.cover').liCover({
+			parent: $('.adaptive-picture'),
+			position:'absolute'
+		})
+	})
+})
+</script>

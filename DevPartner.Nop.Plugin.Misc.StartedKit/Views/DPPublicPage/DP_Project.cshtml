@@ -1,0 +1,178 @@
+﻿@using DevPartner.Nop.Plugin.Core.Services.DPNop
+@using Nop.Core.Infrastructure
+@using Nop.Services.Customers
+@using Nop.Services.Media
+@using Nop.Web.Framework.UI
+@model DevPartner.Nop.Plugin.Misc.StartedKit.Models.ProjectModel
+@{
+    Layout = "~/Views/Shared/_ColumnsOne_Empty.cshtml";
+}
+@{
+    Html.AppendCssFileParts("~/Themes/Unify2/assets/vendor/cubeportfolio-full/cubeportfolio/css/cubeportfolio.min.css");
+    IPictureService pictureService = EngineContext.Current.Resolve<IPictureService>();
+    ICustomerService customerService = EngineContext.Current.Resolve<ICustomerService>();
+    DPProductTagService productTagService = EngineContext.Current.Resolve<DPProductTagService>();
+}
+<!-- Portfolio Single Item -->
+<section class="container g-py-100">
+    <!-- Carousel Images -->
+    <div class="js-carousel g-mb-50"
+         data-arrows-classes="u-arrow-v1 g-absolute-centered--y g-width-40 g-height-40 g-font-size-default g-color-gray-dark-v5 g-bg-white g-color-white--hover g-bg-primary--hover rounded"
+         data-arrow-left-classes="fa fa-angle-left g-left-20"
+         data-arrow-right-classes="fa fa-angle-right g-right-20">
+        @foreach (var picture in Model.Pictures)
+        {
+            <img class="img-fluid" src="@pictureService.GetPictureUrl(picture)" alt="@picture.AltAttribute">
+        }
+    </div>
+    <!-- End Carousel Images -->
+    <div class="row g-mb-70">
+        <div class="col-md-8 g-mb-30">
+            <div class="mb-5">
+                @if (!String.IsNullOrEmpty(Model.Challenge))
+                {
+                    <div class="headline">
+                        <h2>@T("DevPartner.Challenge")</h2>
+                    </div>
+                    <p>@Model.Challenge</p>
+                    <div class="headline">
+                        <h2>@T("DevPartner.Solution")</h2>
+                    </div>
+                    <p>@Model.Sulution</p>
+                    <div class="headline">
+                        <h2>@T("DevPartner.Results")</h2>
+                    </div>
+                    <p>@Model.Results</p>
+                    <div class="headline">
+                        <h2>@T("DevPartner.Benefits")</h2>
+                    </div>
+                    <p>@Model.Benefits</p>
+                }
+                else
+                {
+                    <div class="headline">
+                        <h2>@T("DevPartner.ProductDescription")</h2>
+                    </div>
+                    <p>@Html.Raw(Model.Text)</p>
+                }
+            </div>
+            @*<a class="btn btn-md u-btn-primary g-font-size-default g-rounded-25 g-px-30 g-py-12" href="#">Launch website</a>*@
+        </div>
+        @{
+            List<int> peopleId = Model.Developers.ToList();
+            if (Model.Client.HasValue)
+            {
+                peopleId.Add(Model.Client.Value);
+            }
+            if (Model.Manager.HasValue)
+            {
+                peopleId.Add(Model.Manager.Value);
+            }
+            var people = customerService.GetCustomersByIds(peopleId.ToArray());
+        }
+        <div class="col-md-4 g-mb-30">
+            <div class="headline">
+                <h2>@T("DevPartner.ProductDetails")</h2>
+            </div>
+            @if (Model.Client.HasValue)
+            {
+                <!-- Client -->
+                <div class="mb-5">
+                    <h3 class="h5 g-color-black mb-3">@T("DevPartner.Client")</h3>
+                    @*<a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#">
+                        <img class="g-width-25 g-height-25 rounded-circle mr-2 mb-1" src="../../assets/img-temp/100x100/img1.jpg" alt="Image Description">*@
+                    @people.FirstOrDefault(x => x.Id == Model.Client.Value).Username
+                    @*</a>*@
+                </div>
+                <!-- End Client -->
+            }
+            @if (Model.Manager.HasValue)
+            {
+                <!-- Manager -->
+                <div class="mb-5">
+                    <h3 class="h5 g-color-black mb-3">@T("DevPartner.Manager")</h3>
+                    @*<a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#">
+                        <img class="g-width-25 g-height-25 rounded-circle mr-2 mb-1" src="../../assets/img-temp/100x100/img1.jpg" alt="Image Description">*@
+                    @people.FirstOrDefault(x => x.Id == Model.Manager.Value).Username
+                    @*</a>*@
+                </div>
+                <!-- End Manager -->
+            }
+            <!-- Date -->
+            <div class="mb-5">
+                <h3 class="h5 g-color-black mb-3">@T("DevPartner.Date")</h3>
+                @*<a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="#">
+                    <img class="g-width-25 g-height-25 rounded-circle mr-2 mb-1" src="../../assets/img-temp/100x100/img1.jpg" alt="Image Description">*@
+                @Model.CloseDate.ToString("Y")
+                @*</a>*@
+            </div>
+            <!-- End Date -->
+            <!-- WebSite -->
+            <div class="mb-5">
+                <h3 class="h5 g-color-black mb-3">@T("DevPartner.Website")</h3>
+                <a class="g-color-gray-dark-v4 g-text-underline--none--hover" href="@Model.Link">
+                    @*<img class="g-width-25 g-height-25 rounded-circle mr-2 mb-1" src="../../assets/img-temp/100x100/img1.jpg" alt="Image Description">*@
+                    @Model.Link
+                </a>
+            </div>
+            <!-- End WedSite -->
+            <!-- Developers -->
+            <div class="mb-5">
+                <h3 class="h5 g-color-black mb-3">@T("DevPartner.Developers")</h3>
+                <ul class="list-unstyled">
+                    <li class="my-3">
+                        @*<img class="g-width-25 g-height-25 rounded-circle mb-1 mr-2" src="../../assets/img-temp/100x100/img7.jpg" alt="Image Description">*@
+                        @foreach (var developer in people.Where(x => Model.Developers.Contains(x.Id)))
+                        {
+                            <a class="g-color-gray-dark-v4 g-text-underline--none--hover" @*href="@Url.RouteUrl("Customer", new {SeName = developer.UrlRecord})"*@>@developer.Username</a>
+                        }
+                    </li>
+                </ul>
+            </div>
+            <!-- End Developers -->
+            <!-- Tags -->
+            <div class="g-mb-30">
+                <h3 class="h5 g-color-black mb-3">@T("DevPartner.Tags")</h3>
+                <ul class="u-list-inline mb-0">
+                    @{
+                        var productTag = productTagService.GetProductTagsByIds(Model.Tags.ToList());
+                    }
+                    @foreach (var tag in productTag)
+                    {
+                        <li class="list-inline-item g-mb-10">
+                            <a class="u-tags-v1 g-color-main g-brd-around g-brd-gray-light-v3 g-bg-gray-dark-v2--hover g-brd-gray-dark-v2--hover g-color-white--hover g-rounded-50 g-py-4 g-px-15" href="@Url.RouteUrl("BlogByTag", new {SeName = tag})">@tag.Name</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <!-- End Tags -->
+        </div>
+    </div>
+</section>
+<!-- End Portfolio Single Item -->
+<!-- Cube Portfolio Blocks -->
+<section class="g-bg-gray-light-v5">
+    <div class="container g-py-100">
+        @{ Html.RenderPartial("_DP_LatestWorks"); }
+        @*<div class="span3">
+                @{ Html.RenderPartial("_DP_Testimonials"); }
+            </div>*@
+    </div>
+</section>
+<!-- End Cube Portfolio Blocks -->
+@{
+    Html.AddScriptParts("~/Themes/Unify2/assets/vendor/cubeportfolio-full/cubeportfolio/js/jquery.cubeportfolio.min.js");
+    Html.AddScriptParts("~/Themes/Unify2/assets/js/components/hs.cubeportfolio.js");
+}
+<script>
+    $(document).on('ready', function () {
+        // initialization of cubeportfolio
+        $.HSCore.components.HSCubeportfolio.init('.cbp');
+        // initialization of carousel
+        $.HSCore.components.HSCarousel.init('.js-carousel', {
+          autoplay: false
+        });
+        // initialization of cubeportfolio
+        $.HSCore.components.HSCubeportfolio.init('.cbp');
+      });
+</script>

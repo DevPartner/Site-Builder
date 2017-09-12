@@ -1,0 +1,50 @@
+﻿@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+@using Nop.Web.Framework.UI
+
+@model DevPartner.Nop.Plugin.Misc.StartedKit.Models.ServiceModel
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+}
+
+@{
+    Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/services-item.css");
+}
+<!-- start: Page Title -->
+<div class="breadcrumbs-v3 img-v3 text-center">
+    <div class="container">
+        <h1>@Model.Name</h1>
+        @*<p>Discover more about us</p>*@
+    </div><!--/end container-->
+</div>
+<!-- end: Page Title -->
+<!--start: Wrapper-->
+<div class="wrapper">
+    <!--start: Container -->
+    <div class="container">
+        <!--start: Row -->
+        <div class="row">
+            <div class="span9">
+                @if (!String.IsNullOrEmpty(Model.HeroContent))
+                {
+                    <div class="hero-unit">
+                        <span class="@Model.HeroIcon gray-ico pull-left"></span>
+                        <h4>@Html.Raw(Model.HeroContent)</h4>
+                    </div>
+                }
+                <div class="service-page-body">
+                    @Html.Raw(Model.Text)
+                </div>
+            </div>
+            <!-- start: Sidebar -->
+            <div class="span3 hidden-phone right-col">
+                @Html.Partial("DevPartnerSubscription", new RequestModel())
+                @*@Html.Action("GetAQuorte", "ContactFormSurface")*@
+                @{ Html.Partial("_DP_TestimonialsForServices"); }
+                @{ Html.RenderPartial("_DP_LatestBlogPost"); }
+            </div>
+            <!-- end: Sidebar -->
+        </div>
+    </div>
+    <!--end: Container-->
+</div>
+<!-- end: Wrapper  -->

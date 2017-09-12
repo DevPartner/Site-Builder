@@ -1,0 +1,167 @@
+﻿@using System.Linq;
+@using Nop.Core.Infrastructure;
+@using Nop.Services.Media;
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models;
+@using DevPartner.Nop.Plugin.Core.Services.DPNop
+@using Nop.Core.Domain.Catalog
+@using Nop.Web.Framework.UI
+
+
+@model DevPartner.Nop.Plugin.Core.Models.ViewModels.ListPageViewModel
+@{
+    int PageSize = 20;
+    IPictureService pictureService = EngineContext.Current.Resolve<IPictureService>();
+    int TotalPages = Model.TotalCount / Model.PageSize + ((Model.TotalCount % Model.PageSize) != 0 ? 1 : 0);
+    var models = Model.Entities.Cast<ProjectModel>().ToList();
+}
+<!-- CSS Implementing Plugins -->
+@{
+    //Html.AppendCssFileParts("~/Themes/Unify2/assets/vendor/animate.css");
+    ////Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/animate.css");
+    //Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/line-icons.css");
+    //Html.AppendCssFileParts("~/Themes/Unify2/assets/vendor/cubeportfolio-full/cubeportfolio/css/cubeportfolio.css");
+    //Html.AppendCssFileParts("~/Themes/Unify2/assets/vendor/revolution-slider/revolution/fonts/font-awesome/css/font-awesome.min.css");
+    ////Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/font-awesome.min.css");
+    ////Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/cubeportfolio.css");
+    //Html.AppendCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/custom-cubeportfolio.css");
+    //Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/smoothScroll.js");
+    Html.AppendCssFileParts("~/Themes/Unify2/assets/css/unify.css");
+    Html.AppendCssFileParts("~/Themes/Unify2/assets/vendor/cubeportfolio-full/cubeportfolio/css/cubeportfolio.min.css");
+
+    //Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/jquery.cubeportfolio.js");
+    //Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/jquery.cubeportfolio.js");
+
+    Html.AddScriptParts("~/Themes/Unify2/assets/vendor/cubeportfolio-full/cubeportfolio/js/jquery.cubeportfolio.min.js");
+    Html.AddScriptParts("~/Themes/Unify2/assets/js/components/hs.cubeportfolio.js");
+    //Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/cube-portfolio-3.js");
+
+    Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Content/devpartner/cube-portfolio-3.js");
+}
+
+@if (Model.Entities.Count <= 0)
+{
+    <div class="no-result">
+        @T("DevPartner.Core.List.NoResultsText")
+    </div>
+}
+else
+{
+
+
+    <section class="container-fluid">
+        <div class="row row-offcanvas row-offcanvas-left">
+            <div class="col-sm-8 col-md-9 col-xl-10 g-py-30 g-pa-30--md">
+                <div class="hidden-md-up">
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas">Toggle shocrtcode nav</button>
+                </div>
+                <section class="g-px-20 g-py-100">
+                    <div id="shortcode">
+                        <div class="shortcode-html">
+                            <!-- Cube Portfolio Blocks -->
+                            <div class="clearfix">
+                                <!-- Cube Portfolio Blocks - Filter -->
+                                @{ List<ProductTag> tags = new List<ProductTag>(); }
+                                @if (models.Any())
+                                {
+                                    var productTagService = EngineContext.Current.Resolve<DPProductTagService>();
+                                    var productTagIds = models.Select(x => x.Tags).SelectMany(x => x).Distinct().ToList();
+                                    tags = productTagService.GetProductTagsByIds(productTagIds);
+                                    <ul id="filterControls" class="d-block list-inline text-center g-mb-50">
+
+                                        <li class="list-inline-item cbp-filter-item cbp-filter-item-active g-brd-around g-brd-gray-light-v4 g-brd-primary--active g-color-gray-dark-v4 g-color-primary--hover g-color-primary--active g-font-size-12 rounded g-transition-0_3 g-px-20 g-py-7 mb-2" role="button"
+                                            data-filter="*">
+                                            All
+                                        </li>
+                                        @foreach (var item in tags)
+                                        {
+                                            <li class="list-inline-item cbp-filter-item g-brd-around g-brd-gray-light-v4 g-brd-primary--active g-color-gray-dark-v4 g-color-primary--hover g-color-primary--active g-font-size-12 rounded g-transition-0_3 g-px-20 g-py-7 mb-2" role="button"
+                                                data-filter=".@item.Name">
+                                                @item.Name
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                <!-- End Cube Portfolio Blocks - Filter -->
+                                <!-- Cube Portfolio Blocks - Content -->
+                                <div class="cbp"
+                                     data-controls="#filterControls"
+                                     data-animation="quicksand"
+                                     data-x-gap="20"
+                                     data-y-gap="20"
+                                     data-media-queries='[
+                                         {"width": 1500, "cols": 3},
+                                         {"width": 1100, "cols": 3},
+                                         {"width": 800, "cols": 3},
+                                         {"width": 480, "cols": 2},
+                                         {"width": 300, "cols": 1}
+                                       ]'>
+
+                                    <!-- Cube Portfolio Blocks - Item -->
+                                    @foreach (var result in models)
+                                    {
+                                        if (result != null)
+                                        {
+                                            var tag = tags.Where(x => result.Tags.Contains(x.Id));
+                                            var tagsStr = String.Join(" ", tag.Select(x => x.Name).ToArray());
+                                            <div class="cbp-item identity @tagsStr">
+                                                <div class="u-block-hover g-parent">
+                                                    <img class="img-fluid g-transform-scale-1_1--parent-hover g-transition-0_5 g-transition--ease-in-out" src="@pictureService.GetPictureUrl(result.ThumbnailImageHome)" alt="@result.NavigationTitle">
+                                                    <div class="d-flex w-100 h-100 g-bg-black-opacity-0_6 opacity-0 g-opacity-1--parent-hover g-pos-abs g-top-0 g-left-0 g-transition-0_3 g-transition--ease-in u-block-hover__additional--fade u-block-hover__additional--fade-in g-pa-30">
+                                                        <div class="d-flex align-items-start flex-column mb-auto">
+                                                            <h3 class="h5 g-color-white g-font-weight-700 mb-0">
+                                                                @if (!String.IsNullOrEmpty(result.NavigationTitle))
+                                                                {
+                                                                    @result.NavigationTitle
+                                                                }
+                                                                else if (!String.IsNullOrEmpty(result.Description))
+                                                                {
+                                                                    @result.Description
+                                                                }
+                                                                else if (!String.IsNullOrEmpty(result.Name))
+                                                                {
+                                                                    @result.Name
+                                                                }
+                                                            </h3>
+                                                            <p class="g-color-white-opacity-0_7 mb-0">@tagsStr.Replace(" ", ",")</p>
+                                                        </div>
+                                                        <ul class="align-items-end flex-column list-inline mt-auto ml-auto mb-0">
+                                                            <li class="list-inline-item">
+                                                                <a class="u-icon-v2 u-icon-size--sm g-brd-white g-color-black g-bg-white rounded-circle" href="@Url.RouteUrl("Entity", new {SeName = result.UrlRecord})">
+                                                                    <i class="icon-communication-095 u-line-icon-pro"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item">
+                                                                <a class="cbp-lightbox u-icon-v2 u-icon-size--sm g-brd-white g-color-black g-bg-white rounded-circle" href="@pictureService.GetPictureUrl(result.ThumbnailImageHome)">
+                                                                    <i class="icon-communication-017 u-line-icon-pro"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- End Cube Portfolio Blocks - Item -->
+                                        }
+                                    }
+                                </div>
+                                <!-- End Cube Portfolio Blocks - Content -->
+                            </div>
+                            <div class="cbp-l-loadMore-button">
+                                <a href="@Context.Request.Url" class="cbp-l-loadMore-button-link button">@T("LoadMore")</a>
+                            </div>
+                            <!-- End Cube Portfolio Blocks -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+    <input type="hidden" id="totalPages" value="@TotalPages"/>
+    <script>
+        $(window).on('load',
+            function() {
+                // initialization of cubeportfolio
+                $.HSCore.components.HSCubeportfolio.init('.cbp');
+            });
+    </script>
+    
+}

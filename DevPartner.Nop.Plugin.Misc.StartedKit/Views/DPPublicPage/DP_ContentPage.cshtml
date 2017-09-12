@@ -1,0 +1,57 @@
+﻿@using DevPartner.Nop.Plugin.Core.Services.DPNop
+@using Nop.Web.Framework.UI;
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+@using Nop.Core
+@using Nop.Core.Infrastructure
+@using Nop.Web.Framework
+
+@model DevPartner.Nop.Plugin.Core.Models.CMS.DPPublicContentPageModel
+@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    Html.AddTitleParts((string)Model.Name);
+    //var _localizationService = EngineContext.Current.Resolve<DevPartnerLocalizedEntityService>();
+}
+
+@{
+    if (!string.IsNullOrEmpty((string)Model.MetaTitle))
+    {
+        Html.AddHeadCustomParts("<meta name=\"title\" content=\"" + (string)Model.MetaTitle + "\" />");
+    }
+    else
+    {
+        Html.AddHeadCustomParts("<meta name=\"title\" content=\"" + (string)Model.Name + "\" />");
+    }
+    Html.AppendMetaKeywordParts((string)Model.MetaKeywords);
+    Html.AppendMetaDescriptionParts((string)Model.MetaDescription);
+    Html.AddHeadCustomParts("<meta name=\"date\" content=\"" + DateTime.Now.ToString(" yyyy-MM-dd") + "\" scheme=\"YYYY-MM-DD\"  />");
+
+
+    var _localizationService = EngineContext.Current.Resolve<DevPartnerLocalizedEntityService>();
+    var _workContext = EngineContext.Current.Resolve<IWorkContext>();
+    var entityIds = new List<int>();
+    entityIds.Add(Model.Id);
+    var localProperties = _localizationService.GetLocalizedProperties(entityIds, "Entity"/* EntityTypes.GetEntityType(entity.EntityTypeId)*/, _workContext.WorkingLanguage.Id);
+    var name = Model.Name;
+    var text = Model.Text;
+    if (localProperties.FirstOrDefault(x => x.LocaleKey == "Name") != null)
+    {
+        name = localProperties.FirstOrDefault(x => x.LocaleKey == "Name").LocaleValue;
+    }
+    if (localProperties.FirstOrDefault(x => x.LocaleKey == "Text") != null)
+    {
+        text = localProperties.FirstOrDefault(x => x.LocaleKey == "Text").LocaleValue;
+    }
+}
+
+<div class="container homepage-title">
+    <div class="heading heading-v1">
+        <h1 class="title text-center">@name</h1>
+    </div>
+</div>
+
+<div class="container main-content">
+    <div class="custom-page-box-div">
+        @Html.Raw(text as string)
+    </div>
+</div>

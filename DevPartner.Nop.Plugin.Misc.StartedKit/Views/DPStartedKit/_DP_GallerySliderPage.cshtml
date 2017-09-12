@@ -1,0 +1,77 @@
+﻿@model DevPartner.Nop.Plugin.Misc.StartedKit.Models.GalleryModel
+@using DevPartner.Nop.Plugin.Core.Services.AttRefServices
+@using Nop.Core.Infrastructure
+@using Nop.Services.Media
+@using Nop.Web.Framework.UI
+@{
+    int pictureSize = 300;
+    var pictureService = EngineContext.Current.Resolve<IPictureService>();
+    var attRefBookService = EngineContext.Current.Resolve<IAttRefBookService>();
+    var attRefTypeService = EngineContext.Current.Resolve<IAttRefTypeService>();
+
+    Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Scripts/galleria-1.5.7.min.js");
+    Html.AddCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/Gallery.css");
+    Html.AddScriptParts("~/Plugins/DevPartner.CMS.StartedKit/Content/Galleria/galleria.classic.min.js");
+    Html.AddCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/Galleria/galleria.classic.css");
+
+    var imageVideoTypeRefType = attRefTypeService.GetAttRefTypeByName("ImageVideoType");
+    var imageVideoTypeRefBooks = attRefBookService.GetAttRefBooksByRefType(imageVideoTypeRefType.Id);
+    var videoRefBook = imageVideoTypeRefBooks.Where(x => x.Value == "Video").FirstOrDefault();
+}
+
+<div class="mainContent">
+    <div id="galleria">
+        @foreach (var item in Model.Models)
+        {
+            if (item.ImageVideoType == videoRefBook.Id && !String.IsNullOrEmpty(item.ExternalUrl))
+            {
+                <a href="@Html.Raw(item.ExternalUrl)"><span class="video">Watch this video</span></a>
+            }
+            else
+            {
+                string fullSizepictureUrl = "";
+                string pictureUrl = "";
+                if (item.ThumbnailImage != null)
+                {
+                    fullSizepictureUrl = pictureService.GetPictureUrl(item.ThumbnailImage);
+                    pictureUrl = pictureService.GetPictureUrl(item.ThumbnailImage, pictureSize);
+                }
+                else
+                {
+                    fullSizepictureUrl = pictureService.GetDefaultPictureUrl();
+                    pictureUrl = pictureService.GetDefaultPictureUrl(300);
+                }
+                var link = item.ImageVideoType == videoRefBook.Id && !String.IsNullOrEmpty(item.ExternalUrl) ? item.ExternalUrl : fullSizepictureUrl;
+
+                <a href="@fullSizepictureUrl">
+                    <img src="@pictureUrl"
+                         data-big="@fullSizepictureUrl"
+                         data-title="@(item.ThumbnailImage!=null ? item.ThumbnailImage.TitleAttribute : "")"
+                         data-description="@(item.ThumbnailImage!=null ? item.ThumbnailImage.AltAttribute : "")">
+                </a>
+
+            }
+        }
+    </div>
+</div>
+<script>
+    // Initialize Galleria
+    Galleria.run('#galleria', {
+        height: 520, //--I made heights match
+    });
+    Galleria.ready(function (options) {
+        this.attachKeyboard({
+            left: this.prev, // applies the native prev() function
+            right: this.next,
+            up: function () {
+                // custom up action
+                Galleria.log('up pressed');
+            },
+            13: function () {
+                // start playing when return (keyCode 13) is pressed:
+                this.play(3000);
+            }
+        });
+    });
+
+</script>

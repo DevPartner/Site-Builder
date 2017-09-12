@@ -1,0 +1,66 @@
+﻿@using System.Linq;
+@using DevPartner.Nop.Plugin.Core.Models.Basic
+@using Nop.Core.Infrastructure;
+@using Nop.Services.Media;
+@using DevPartner.Nop.Plugin.Core.Services.DPNop
+
+@model DevPartner.Nop.Plugin.Core.Models.ViewModels.ListPageViewModel
+@{
+        DevPartnerUrlRecordService _urlRecordService =
+        EngineContext.Current.Resolve<DevPartnerUrlRecordService>();
+        IPictureService _pictureService = EngineContext.Current.Resolve<IPictureService>();
+
+        var models = Model.Entities.Cast<DPPublicContentPageModel>().ToList();
+
+        var slugs = _urlRecordService.GetActiveSlugs(models.Select(x => x.Id).ToList(), "Entity");
+        var defaultSlugs = slugs.Where(x => x.LanguageId == 0).ToList();
+        for (int i = 0; i < models.Count; i++)
+        {
+            var productValues = defaultSlugs.FirstOrDefault(x => x.EntityId == models[i].Id);
+            if (productValues != null)
+            {
+                models[i].UrlRecord = productValues.Slug;
+            }
+        }
+ 
+    <div class="gallery-items-list">
+        @foreach (var entity in models)
+        {
+            <div class="item">
+                <div class="item-picture">
+                    <div class="adaptive-picture">
+                        <a href="@Url.RouteUrl("Entity", new {SeName = entity.UrlRecord})"><img class="cover" src="@_pictureService.GetPictureUrl(entity.ThumbnailImage)"/></a>
+                    </div>
+                </div>
+
+                <div class="item-head">
+                    @*<div class="item-date"><span class="date-label">@T("DevPartner.Core.UpdatedOnUtc"):</span><span class="date-value">@(entity.PublishDateTime != null ? entity.PublishDateTime.Value.ToString("dd MMMM, hh:mm", CultureInfo.InvariantCulture) : "")</span></div>*@
+                    <a class="title" href="@Url.RouteUrl("Entity", new {SeName = entity.UrlRecord})">
+                        <h2>@entity.Name</h2>
+                    </a>
+                </div>
+
+                @*<div class="item-body">
+                    <div class="item-body-label">@T("DevPartner.Core.Description"):</div>
+                    <div class="item-body-value">
+                        @Html.Raw(entity.Description)
+                        <a class="read-more" href="@Url.RouteUrl("Entity", new {SeName = entity.UrlRecord})">Подробнее</a>
+                    </div>
+                </div>*@
+            </div>
+        }
+        @if (models.Count <= 0)
+        {
+            <div class="no-result">
+                @T("DevPartner.Core.List.NoResultsText")
+            </div>
+        }
+    </div>
+    @*(Html.Partial("_DevPartnerPagination", new PaginationInfo
+    {
+        PageUrl = Url.SetParameter("page", "!0"),
+        CurrentPage = Model.PageIndex,
+        PageSize = Model.PageSize,
+          TotalItemCount = Model.TotalCount,
+    }))*@
+}

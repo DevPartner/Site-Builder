@@ -1,0 +1,78 @@
+﻿@using DevPartner.Nop.Plugin.Core.Helpers
+@using DevPartner.Nop.Plugin.Core.Models
+@using DevPartner.Nop.Plugin.Core.Models.Basic
+@using Nop.Core.Infrastructure
+@using Nop.Web.Framework.UI
+@using DevPartner.Nop.Plugin.Core.Services.Entities
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+
+@model DevPartner.Nop.Plugin.Core.Models.ViewModels.ListPageViewModel
+
+@{
+    //page class
+    Html.AppendPageCssClassParts("html-account-page");
+    Html.AppendPageCssClassParts("html-download-list-page");
+
+    Html.AddCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/listOfFilesStyle.css");
+
+    var models = Model.Entities.Cast<DownloadModel>().ToList();
+}
+@section left
+{
+    @try
+    {
+        @Html.Action("CustomerNavigation", "Customer")
+    }
+    catch
+    {
+        @Html.Partial("~/Views/Customer/MyAccountNavigation.cshtml", Model, new ViewDataDictionary())
+    }
+}
+
+<div class="items-list">
+    @foreach (var entity in models)
+    { 
+        <div class="item">
+            <div class="item-row">
+                <div class="item-row-label">
+                    @T("DevPartner.Core.Title"):
+                </div>
+                <div class="item-row-value">
+                    @entity.Name
+                </div>
+            </div>
+            <div class="item-row">
+                <div class="item-row-label">@T("DevPartner.Core.FileLink"):</div>
+                @if(entity.Download!=null){
+                    var download = entity.Download;
+                    <div class="item-row-value">[<a href="@Url.RouteUrl("DevPartner.Nop.Plugin.Core.PublicPage.DownloadFile", new {entityId = @entity.Id, downloadId = @download.Id})">@string.Format("{0}{1}", download.Filename, download.Extension)</a>]
+                    </div>
+                }
+            </div>
+            <div class="item-row">
+                <div class="item-row-label">@T("DevPartner.Core.UpdatedOnUtc"):</div>
+                <div class="item-row-value">@entity.UpdatedOnUtc</div>
+            </div>
+            <div class="item-row">
+                <div class="item-row-label">@T("DevPartner.Core.Description"):</div>
+                <div class="item-row-value">@Html.Raw(entity.Description)</div>
+            </div>
+        </div>
+    }
+    @if (models.Count <= 0)
+    {
+        <div class="no-result">
+            @T("DevPartner.Core.List.NoResultsText")
+        </div>
+    }
+</div>
+@if (Model.TotalCount > 0)
+{
+    @(Html.Partial("_DevPartnerPagination", new PaginationInfo
+      {
+          PageUrl = Url.SetParameter("page", "!0"),
+          CurrentPage = Model.PageIndex,
+          PageSize = Model.PageSize,
+          TotalItemCount = Model.TotalCount,
+      }))
+}

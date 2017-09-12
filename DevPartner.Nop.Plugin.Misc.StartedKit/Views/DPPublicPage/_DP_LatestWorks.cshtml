@@ -1,0 +1,97 @@
+﻿@using DevPartner.Nop.Plugin.Core.Domain
+@using DevPartner.Nop.Plugin.Core.Helpers
+@using DevPartner.Nop.Plugin.Core.Services.Entities
+@using DevPartner.Nop.Plugin.Core.Services.Filters
+@using DevPartner.Nop.Plugin.Core.Singletons
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+@using SKSingletons = DevPartner.Nop.Plugin.Misc.StartedKit.Singletons
+@using Nop.Core.Infrastructure
+@using Nop.Services.Media
+@*@model List<int>*@
+@{
+    //temp
+    //get projects
+
+    //prepare services
+    var entityService = EngineContext.Current.Resolve<IEntityService>();
+    var entityTypeService = EngineContext.Current.Resolve<IEntityTypeService>();
+    var entityModelService = EngineContext.Current.Resolve<IEntityModelService>();
+    var pictureService = EngineContext.Current.Resolve<IPictureService>();
+
+    //Find all childe entity
+    //todo 1) how create filter for exclude parent project from search
+    //2) how configure filter for search at least 3 projects(impossible)
+    //3)how create orderBy on AvailableStartDateTimeUtc
+    // in legacy code: items.OrderByDescending(x => x.AvailableStartDateTimeUtc).Take(3)
+    var entities = entityService.SearchEntities(new List<int>() { SKSingletons.EntityTypes.Project.Id },
+//filters: new List<AttTypeFilter>()
+//        {
+//            new AttTypeFilter()
+//            {
+//                Id = SKSingletons.AttTypes.Tags.Id,
+//                AttDataType = AttDataTypes.ExtRef,
+//                Value = Model.FirstOrDefault()
+//            },
+//        },
+pageSize: 3, orderBy: (x => x.UpdatedOnUtc));
+    //Find childe entity : Service
+    var entityType = entityTypeService.GetEntityTypeById(SKSingletons.EntityTypes.Project.Id);
+    var typeExt = entityType.GetEntityTypeExt();
+    var type = Type.GetType(typeExt.AssemblyType);
+    var items = entityModelService.GetModels(entities, type).Cast<ProjectModel>().ToList();
+}
+
+@if (items.Any())
+{
+    <h2 class="g-color-black text-center mb-5">@T("DPStartedKit.ProjectTittle")</h2>
+    <div class="cbp"
+         data-animation="quicksand"
+         data-x-gap="30"
+         data-y-gap="30"
+         data-media-queries='[{"width": 1500, "cols": 3}, {"width": 1100, "cols": 3}, {"width": 800, "cols": 3}, {"width": 480, "cols": 2}, {"width": 300, "cols": 1}]'>
+        <!-- Cube Portfolio Blocks - Item -->
+        @foreach (var item in items)
+        {
+            if (item != null)
+            {
+                <div id="shortcode" class="cbp-item identity design">
+                    <div class="u-block-hover g-parent">
+                        @{
+                            var thumbnailImage = item.ThumbnailImageHome != null ? item.ThumbnailImageHome : item.ThumbnailImage;
+                            var thumbnailImageUrl = @pictureService.GetPictureUrl(thumbnailImage);
+                        }
+                        <img class="img-fluid g-transform-scale-1_1--parent-hover g-transition-0_5 g-transition--ease-in-out" src="@thumbnailImageUrl" alt="@item.Name">
+                        <div class="d-flex w-100 h-100 g-bg-black-opacity-0_6 opacity-0 g-opacity-1--parent-hover g-pos-abs g-top-0 g-left-0 g-transition-0_3 g-transition--ease-in u-block-hover__additional--fade u-block-hover__additional--fade-in g-pa-20">
+                            <ul class="align-items-end flex-column list-inline mt-auto ml-auto mb-0">
+                                <li class="list-inline-item">
+                                    <a class="u-icon-v2 u-icon-size--sm g-brd-white g-color-black g-bg-white rounded-circle" href="@Url.RouteUrl("Entity", new {SeName = item.UrlRecord})">
+                                        <i class="icon-communication-095 u-line-icon-pro"></i>
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="cbp-lightbox u-icon-v2 u-icon-size--sm g-brd-white g-color-black g-bg-white rounded-circle" href="@thumbnailImageUrl">
+                                        <i class="icon-communication-017 u-line-icon-pro"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="u-shadow-v19 g-bg-white text-center g-pa-25 mb-1">
+                        <h3 class="h5 g-color-black g-font-weight-600 mb-1">
+                            @if (!String.IsNullOrEmpty(item.NavigationTitle))
+                            {
+                                @item.NavigationTitle
+                            }
+                            else
+                            {
+                                @item.Name
+                            }
+                        </h3>
+                        <p class="mb-0">@item.Description</p>
+                    </div>
+                </div>
+                                }
+                            }
+        <!-- End Cube Portfolio Blocks - Item -->
+    </div>
+                            }

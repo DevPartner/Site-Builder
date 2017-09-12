@@ -1,0 +1,44 @@
+﻿@using DevPartner.Nop.Plugin.Core.Services.DPNop
+@using Nop.Core.Infrastructure
+@using Nop.Core
+@using DevPartner.Nop.Plugin.Core.Helpers
+@using Nop.Web.Framework.UI
+
+@model DevPartner.Nop.Plugin.Misc.StartedKit.Models.GalleryModel
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+
+    var _workContext = EngineContext.Current.Resolve<IWorkContext>();
+    var _localizationService = EngineContext.Current.Resolve<DevPartnerLocalizedEntityService>();
+    var localProperty = _localizationService.GetLocalizedProperties(new List<int>() { Model.Id }, "Entity", _workContext.WorkingLanguage.Id).Where(x => x.LocaleKey == "Name").ToList();
+    if (localProperty.Any())
+    {
+        Model.Name = localProperty.FirstOrDefault().LocaleValue;
+    }
+    Model.PageIndex = (int)Url.GetParameter("page").ToInt(1).Value;
+}
+
+<div class="page gallery-page">
+    <div class="page-title">
+        <h1>@Html.Raw(Model.Name)</h1>
+    </div>
+
+    <div class="page-body">
+        @{
+            if (string.IsNullOrEmpty(Model.FlickrKeysords) && string.IsNullOrEmpty(Model.PicasaKeyword))
+            {
+                @Html.Action("List", "DPStartedKit", new { model = Model })
+            }
+            else if (!string.IsNullOrEmpty(Model.FlickrKeysords))
+            {
+                @Html.Partial("_DP_FlickrList", Model.FlickrKeysords)
+            }
+            else
+            {
+                @Html.Partial("_DP_PicasaList", Model.PicasaKeyword)
+            }
+        }
+    </div>
+</div>
+

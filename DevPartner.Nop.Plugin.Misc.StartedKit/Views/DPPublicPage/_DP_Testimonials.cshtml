@@ -1,0 +1,74 @@
+﻿@using DevPartner.Nop.Plugin.Core.Helpers
+@using DevPartner.Nop.Plugin.Core.Services.Entities
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Models
+@using DevPartner.Nop.Plugin.Misc.StartedKit.Singletons
+@using Nop.Core.Infrastructure
+@{
+    //get testimonials
+    //prepare services
+    var entityService = EngineContext.Current.Resolve<IEntityService>();
+    var entityTypeService = EngineContext.Current.Resolve<IEntityTypeService>();
+    var entityModelService = EngineContext.Current.Resolve<IEntityModelService>();
+
+    //Find all childe entity
+    var entities = entityService.SearchEntities(EntityTypes.Testimonial.Id);
+    //Find childe entity : Service
+    var entityType = entityTypeService.GetEntityTypeById(EntityTypes.Testimonial.Id);
+    var typeExt = entityType.GetEntityTypeExt();
+    var type = Type.GetType(typeExt.AssemblyType);
+    var testimonials = entityModelService.GetModels(entities, type).Cast<TestimonialModel>().ToList();
+}
+@if (testimonials.Any())
+{
+
+    <!-- start: Testimonials-->
+    <div class="testimonial-container">
+        <div class="headline">
+            <h2>@T("TestimonialsTitle")</h2>
+        </div>
+
+        <div class="margin-bottom-40">
+            <div id="testimonials-1" class="carousel slide testimonials testimonials-v1">
+                <div class="carousel-inner">
+                    @{
+                        var i = 0;
+                    }
+
+                    @foreach (var item in testimonials)
+                    {
+                        if (item != null)
+                        {
+
+
+                            <div class="item @(i == 0 ? "active" : "")">
+                                <p>@item.Description</p>
+                                <div class="testimonial-info">
+
+                                    <span class="testimonial-author">
+                                        @item.ClientName
+                                        <em>@item.ClientTitle, @item.ClientContactName</em>
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                        i++;
+                    }
+
+                </div>
+
+                <div class="carousel-arrow">
+                    <a class="left carousel-control" href="#testimonials-1" data-slide="prev">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a class="right carousel-control" href="#testimonials-1" data-slide="next">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- end: Testimonials-->
+
+                        }

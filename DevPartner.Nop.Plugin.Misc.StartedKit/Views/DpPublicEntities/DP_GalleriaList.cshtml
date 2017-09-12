@@ -1,0 +1,65 @@
+﻿@model DevPartner.Nop.Plugin.Misc.StartedKit.Models.GalleryModel
+@using DevPartner.Nop.Plugin.Core.Services.DPNop
+@using Nop.Core.Domain.Media
+@using Nop.Core.Infrastructure
+@using Nop.Web.Framework.UI
+@{
+
+    Html.AddCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/Gallery.css");
+    Html.AddCssFileParts("~/Plugins/DevPartner.CMS.StartedKit/Content/Galleria/galleria.classic.css");
+    var pictureService = EngineContext.Current.Resolve<DPPictureService>();
+    var mediaSettings = EngineContext.Current.Resolve<MediaSettings>();
+    int pictureSize = mediaSettings.ProductThumbPictureSize;
+}
+<script src="/Plugins/DevPartner.CMS.StartedKit/Scripts/galleria-1.3.5.min.js"></script>
+<script src="/Plugins/DevPartner.CMS.StartedKit/Content/Galleria/galleria.classic.min.js"></script>
+<div class="mainContent">
+    <div id="galleria">
+        @foreach (var item in Model.Models)
+        {
+            var fullSizePictureUrl = pictureService.GetPictureUrl(item.ThumbnailImage);
+            var pictureUrl = pictureService.GetPictureUrl(item.ThumbnailImage, pictureSize);
+            if (!String.IsNullOrEmpty(item.ExternalUrl))
+            {
+                <a href="@fullSizePictureUrl">
+                    <img src="@pictureUrl"
+                         data-big="@pictureUrl"
+                         data-title="@item.Name"
+                         data-description="@item.Description">
+                </a>
+            }
+            else
+            {
+                <a href="@fullSizePictureUrl">
+                    <img src="@pictureUrl"
+                         data-big="@pictureUrl"
+                         data-title="@item.Name"
+                         data-description="@item.Description">
+                </a>
+
+            }
+        }
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        // Initialize Galleria
+        Galleria.run('#galleria', {
+            height: 520, //--I made heights match
+        });
+        Galleria.ready(function(options) {
+            this.attachKeyboard({
+                left: this.prev, // applies the native prev() function
+                right: this.next,
+                up: function() {
+                    // custom up action
+                    Galleria.log('up pressed');
+                },
+                13: function() {
+                    // start playing when return (keyCode 13) is pressed:
+                    this.play(3000);
+                }
+            });
+        });
+    });
+</script>

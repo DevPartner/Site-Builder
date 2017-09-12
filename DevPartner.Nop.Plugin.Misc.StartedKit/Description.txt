@@ -1,0 +1,8 @@
+﻿Group: Dev Partner
+FriendlyName:  Dev Partner CMS StartedKit Plugin
+SystemName: DevPartner.Misc.StartedKit
+Version: 1.3
+SupportedVersions: 3.90
+Author: Dev-Partner.biz
+DisplayOrder: 3
+FileName: DevPartner.Nop.Plugin.Misc.StartedKit.dll
